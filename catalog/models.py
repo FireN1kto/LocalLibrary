@@ -1,6 +1,8 @@
 from django.db import models
 from django.urls import reverse
 import uuid
+from django.contrib.auth.models import User
+from datetime import date
 
 class Genre(models.Model):
     name = models.CharField(max_length=200, help_text="Укажите жанр книги (например, научная фантастика, французская поэзия и т. д.)", verbose_name=("Жанр"))
@@ -32,6 +34,7 @@ class BookInstance(models.Model):
     book = models.ForeignKey('Book', on_delete=models.SET_NULL, null=True, verbose_name=("Книга"))
     imprint = models.CharField(max_length=200, verbose_name=("Штамп(год выпуска)"))
     due_back = models.DateField(null=True, blank=True, verbose_name=("Дата возвращения книги"))
+    borrower = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, verbose_name=("Заёмщик"))
 
     LOAN_STATUS = (
         ('m', 'Книга на тех. обслуживании'),
@@ -48,6 +51,11 @@ class BookInstance(models.Model):
 
     def __str__(self):
         return '%s (%s)' % (self.id,self.book.title)
+
+    def is_overdue(self):
+        if self.due_back and date.today() > self.due_back:
+            return True
+        return False
 
 class Author(models.Model):
     first_name = models.CharField(max_length=100, verbose_name=("Имя"))
