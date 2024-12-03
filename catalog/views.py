@@ -18,5 +18,18 @@ class BookListView(generic.ListView):
     model = Book
     paginate_by = 2
 
+    def get_queryset(self):
+        return Book.objects.filter(title__icontains='')[:5]  #
+
 class BookDetailView(generic.DetailView):
     model = Book
+
+class AuthorListView(generic.ListView):
+    model = Author
+    paginate_by = 3
+
+    def get_queryset(self):
+        return Author.objects.all()
+
+class AuthorDetailView(generic.DetailView):
+    model = Author
