@@ -32,8 +32,11 @@ class BookListView(generic.ListView):
     model = Book
     paginate_by = 2
 
-    def get_queryset(self):
-        return Book.objects.filter(title__icontains='')[:5]  #
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        for book in context['object_list']:
+            book.genre_count = book.genre.count()
+        return context  #
 
 class BookDetailView(generic.DetailView):
     model = Book
